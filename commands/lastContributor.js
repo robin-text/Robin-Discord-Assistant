@@ -1,5 +1,6 @@
 const axios = require('axios');
 const API = 'https://robinrestapi.herokuapp.com/';
+const Discord = require('discord.js');
 
 findBranchSHA = function (response, branch) {
     var responseData = response.data;
@@ -31,18 +32,8 @@ findFile = async function (response, file) {
         var nameLower = blob_name[i].toLowerCase();
         var fileLower = file.toLowerCase();
         var path_files = nameLower.split("/");
-        if( path_files.indexOf(fileLower) > -1 ) 
-            if( path_files.indexOf(fileLower) > -1 ) 
-        if( path_files.indexOf(fileLower) > -1 ) 
-            if( path_files.indexOf(fileLower) > -1 ) 
-        if( path_files.indexOf(fileLower) > -1 ) 
-            if( path_files.indexOf(fileLower) > -1 ) 
-        if( path_files.indexOf(fileLower) > -1 ) 
-            if( path_files.indexOf(fileLower) > -1 ) 
-        if( path_files.indexOf(fileLower) > -1 ) 
-        {
+        if( path_files.indexOf(fileLower) > -1 )
             all_paths.push(blob_name[i]);
-        }
     }
 
     return all_paths;
@@ -56,8 +47,8 @@ findLastContributor = function (response) {
 
 module.exports = async function(args, repo, owner) {
     var message = '';
-    var file = args[0];
-    var branch = args[1];
+    var file = args.file;
+    var branch = args.branch;
 
     if (branch == undefined) {
         var repoResult = await axios.get(`${API}repo/${owner}/${repo}`);
@@ -72,15 +63,24 @@ module.exports = async function(args, repo, owner) {
 
     var paths = await findFile(result, file);
 
+    var message = ''
+
     if (paths.length < 1)
     {
-        return `The file ${file} in the ${branch} doesn't seem to exist.`;
+        message = `The file ${file} in the ${branch} doesn't seem to exist.`;
     }
 
     if (paths.length == 1)
     {
         result =  await axios.get(`${API}commit/path/${owner}/${repo}/${encodeURI(paths[0])}`);
         var contributor = findLastContributor(result);
-        return `The last contributor to ${file} in the ${branch} branch was ${contributor}.`;
+        console.log(result)
+        message =  `The last contributor to [${file}](${result.data[0].html_url}) in the ${branch} branch was [${contributor}](${result.data[0].author.html_url}).`;
+        console.log(result.data[0].committer)
+        console.log(result.data[0].author)
+        console.log(message)
     }
+
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }

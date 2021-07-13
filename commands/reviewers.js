@@ -1,5 +1,6 @@
 const axios = require('axios');
 const API = 'https://robinrestapi.herokuapp.com/';
+const Discord = require('discord.js');
 
 module.exports = async function(args, repo, owner) {
     var message = '';
@@ -35,7 +36,7 @@ module.exports = async function(args, repo, owner) {
 
     if (message === '') {
         message = "\nNo one has reviewed this pull request.\n";
-    } 
-
-    return message;
+    }
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }

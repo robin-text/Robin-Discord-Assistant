@@ -1,5 +1,6 @@
 const axios = require('axios');
 const API = 'https://robinrestapi.herokuapp.com/';
+const Discord = require('discord.js');
 
 convertDate = function(time) {
     var date = new Date(time);
@@ -22,14 +23,18 @@ module.exports = async function(args, repo, owner) {
 
     var result = await axios.get(`${API}commit/${owner}/${repo}/${pr_sha}`);
     var responseData = result.data;
-    
+
+    var message = ''
+
     if (responseData.length > 0)
     {
         var desc = responseData[0].description;
         var time = convertDate(responseData[0].created_at);
 
-        return `For PR ${pr_num}, ${desc} at ${time}. It was created by ${author}.`;
+        message = `For PR ${pr_num}, ${desc} at ${time}. It was created by ${author}.`;
     }
 
-    return `The repository ${repo} by ${user} doesn't seem to have an integrated CI, at least for PR ${pr_num}.`;
+    else message = `The repository ${repo} by ${user} doesn't seem to have an integrated CI, at least for PR ${pr_num}.`;
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }

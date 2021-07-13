@@ -2,10 +2,12 @@ const axios = require('axios');
 
 const API = 'https://robinrestapi.herokuapp.com/';
 
-module.exports = function(message, args) {
-    var num = args[0];
-    var merge_message = args[1];
+// module.exports = async function(message, args) {
+module.exports = async function(args, repo, owner) {
+    var num = args[num];
+    var merge_message = args[merge_message];
     var result =  await axios.get(`${API}pr/sha/${owner}/${repo}/${num}`);
+    console.log(result);
 
 
     var sha = result.data.head.sha;
@@ -20,7 +22,7 @@ module.exports = function(message, args) {
     else if (result.response.status == 405) {
         message = `Pull request number ${num} is not mergeable. Please
             resolve conflicts, make sure the p r exists, and then try again`;
-    } 
+    }
 
     return message
 }

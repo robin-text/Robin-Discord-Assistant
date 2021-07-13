@@ -1,14 +1,17 @@
 const axios = require('axios');
-
 const API = 'https://robinrestapi.herokuapp.com/';
-getListOfNames = function(response, info) {
+const Discord = require('discord.js');
+
+// getListOfNames = function(response, info) {
+getListOfNames = function(response) {
     var names = [];
     if (typeof response.data === "undefined") {
         return response;
     }
     var responseData = response.data;
     for (var i = 0; i < responseData.length; i++) {
-        eval(info);
+        // eval(info);
+        names.push(responseData[i].name)
     }
     names = new Set(names);
     names = Array.from(names);
@@ -16,7 +19,8 @@ getListOfNames = function(response, info) {
 }
 
 findBranch = function (response, branch) {
-    var branchNames = getListOfNames(response, 'names.push(responseData[i].name)')
+    // var branchNames = getListOfNames(response, 'names.push(responseData[i].name)')
+    var branchNames = getListOfNames(response)
     for (var i = 0; i < branchNames.length; i++) {
         var nameLower = branchNames[i].toLowerCase();
         if (nameLower.localeCompare(branch) == 0)  {
@@ -28,9 +32,9 @@ findBranch = function (response, branch) {
 }
 
 module.exports = async function(args, repo, owner) {
-    var base = args.shift();
-    var head = args.shift();
-    var commit_message = args.join(" ");
+    var base = args.base;
+    var head = args.head;
+    var commit_message = args.message;
 
     var result = await axios.get(`${API}branch/${owner}/${repo}`);
 
@@ -46,12 +50,14 @@ module.exports = async function(args, repo, owner) {
     }
 
     result = await axios.post(`${API}branch/${owner}/${repo}/merge`,
-        body            
+        body
     );
 
     if (result.status == 200) {
         message = `Merge of head ${head} into base ${base} was successful`;
     }
+    console.log(result)
 
-    return message;
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }

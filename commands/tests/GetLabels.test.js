@@ -4,7 +4,7 @@
 // 1 for both
 // 1 for none
 // 1 for 404
-const GetLabels = require("../GetLabels");
+const GetLabels = require("../labels");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

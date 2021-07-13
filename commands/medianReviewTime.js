@@ -1,5 +1,6 @@
 const axios = require('axios');
 const API = 'https://robinrestapi.herokuapp.com/';
+const Discord = require('discord.js');
 
 calcDate = function(num, time, date) {
     var offset = 14;    //offset time unit in days, default two weeks
@@ -77,6 +78,7 @@ module.exports = async function(args, repo, owner, token) {
     if (responses.length > 0) {
         message = parsePRList(responses, dateParsed);
     }
-    return message;
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }
 

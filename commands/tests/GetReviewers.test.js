@@ -1,4 +1,4 @@
-const GetReviewers = require("../GetReviewers");
+const GetReviewers = require("../reviewers");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

@@ -1,4 +1,4 @@
-const GetAssigneeIssues = require("../GetAssigneeIssues");
+const GetAssigneeIssues = require("../assigneeIssues");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

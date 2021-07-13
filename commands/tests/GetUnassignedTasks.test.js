@@ -1,4 +1,4 @@
-const GetUnassignedTasks = require("../GetUnassignedTasks");
+const GetUnassignedTasks = require("../unassignedTasks");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

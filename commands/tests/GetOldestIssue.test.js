@@ -1,4 +1,4 @@
-const GetOldestIssue = require("../GetOldestIssue");
+const GetOldestIssue = require("../oldestIssue");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

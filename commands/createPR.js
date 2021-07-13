@@ -1,14 +1,15 @@
 const axios = require('axios');
-
 const API = 'https://robinrestapi.herokuapp.com/';
-getListOfNames = function(response, info) {
+const Discord = require('discord.js');
+
+getListOfNames = function(response) {
     var names = [];
     if (typeof response.data === "undefined") {
         return response;
     }
     var responseData = response.data;
     for (var i = 0; i < responseData.length; i++) {
-        eval(info);
+        names.push(responseData[i].name)
     }
     names = new Set(names);
     names = Array.from(names);
@@ -16,7 +17,7 @@ getListOfNames = function(response, info) {
 }
 
 findBranch = function (response, branch) {
-    var branchNames = getListOfNames(response, 'names.push(responseData[i].name)')
+    var branchNames = getListOfNames(response)
     for (var i = 0; i < branchNames.length; i++) {
         var nameLower = branchNames[i].toLowerCase();
         if (nameLower.localeCompare(branch) == 0)  {
@@ -28,12 +29,12 @@ findBranch = function (response, branch) {
 }
 
 module.exports = async function(args, repo, owner) {
-    const title = args[0];
-    var base = args[1];
+    const title = args.title;
+    var base = args.base;
     if (typeof base === "undefined") {
         base = "master";
     }
-    var head = args[2];
+    var head = args.head;
 
     var result = await axios.get(`${API}branch/${owner}/${repo}`);
 
@@ -49,12 +50,15 @@ module.exports = async function(args, repo, owner) {
     }
 
     result = await axios.post(`${API}pr/${owner}/${repo}/create`,
-        body            
+        body
     );
 
     if (result.status == 200) {
         message = `The pull request was successfully created as P.R. number ${result.data.number}`;
     }
 
-    return message;
+    console.log(result)
+
+    const embed = new Discord.MessageEmbed().setDescription(message);
+    return embed;
 }

@@ -1,4 +1,4 @@
-const GetBuildStatus = require("../GetBuildStatus");
+const GetBuildStatus = require("../buildStatus");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

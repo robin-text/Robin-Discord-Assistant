@@ -1,4 +1,4 @@
-const GetLastContributor = require("../GetLastContributor");
+const GetLastContributor = require("../lastContributor");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

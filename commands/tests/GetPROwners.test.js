@@ -1,4 +1,4 @@
-const GetPROwners = require("../GetPROwners");
+const GetPROwners = require("../PROwners");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

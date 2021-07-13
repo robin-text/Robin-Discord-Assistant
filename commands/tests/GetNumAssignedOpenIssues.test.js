@@ -1,4 +1,4 @@
-const GetNumAssignedOpenIssues = require("../GetNumAssignedOpenIssues");
+const GetNumAssignedOpenIssues = require("../numAssignedOpenIssues");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");
