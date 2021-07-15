@@ -477,7 +477,10 @@ client.on('ready', async () => {
             }
         }
         console.log(args)
-        if (command === "set") {
+        // clean this
+        if (command === "signin") {
+            reply = await commandlist[command](args, userRepos.get(id), userOwners.get(id), userTokens.get(id));
+        } else if (command === "set") {
             reply = await commandlist[command](options, id, userOwners, userRepos, db)
         } else if (!userRepos.has(id) || !userOwners.has(id)) {
             reply = 'Before using any commands, sign in with `/signin` and set your configuration with `/set`.'
