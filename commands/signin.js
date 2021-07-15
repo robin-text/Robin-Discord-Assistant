@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const axios = require("axios");
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 
 module.exports = function(message, args) {
     app.get('/discord/oauth-callback', async ({ query: {code} }, res) => {
