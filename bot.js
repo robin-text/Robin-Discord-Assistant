@@ -3,6 +3,7 @@ require('dotenv').config();
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const guildId = '697997529312133220'
+const sqlite = require('sqlite3').verbose();
 
 const approvepr = require("./commands/approvePR.js");
 const getreviewers = require("./commands/reviewers.js");
@@ -63,6 +64,7 @@ const commandlist = {
 userRepos = new Map();
 userOwners = new Map();
 userTokens = new Map();
+let db = new sqlite.Database('./robin.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE)
 
 const getApp = (guildId) => {
     const app = client.api.applications(client.user.id)
@@ -80,6 +82,9 @@ client.on('message', (msg) => {
 })
 
 client.on('ready', async () => {
+
+    db.run(`CREATE TABLE IF NOT EXISTS data(id TEXT NOT NULL, owner TEXT NOT NULL, repo TEXT NOT NULL)`)
+    // db.run(`CREATE TABLE IF NOT EXISTS data(id TEXT NOT NULL, owner TEXT NOT NULL, repo TEXT NOT NULL)`)
 
     const commands = await getApp(guildId).commands.get()
 
@@ -473,7 +478,7 @@ client.on('ready', async () => {
         }
         console.log(args)
         if (command === "set") {
-            reply = await commandlist[command](options, id, userOwners, userRepos)
+            reply = await commandlist[command](options, id, userOwners, userRepos, db)
         } else if (!userRepos.has(id) || !userOwners.has(id)) {
             reply = 'Before using any commands, sign in with `/signin` and set your configuration with `/set`.'
         } else if (command in commandlist) {
