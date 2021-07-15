@@ -2,19 +2,6 @@ const Discord = require('discord.js');
 const axios = require("axios");
 
 module.exports = function(app) {
-    app.get('/discord/oauth-callback', async ({ query: {code} }, res) => {
-        console.log('print1');
-        const body = {
-            client_id: process.env.GITHUB_CLIENT_ID,
-            client_secret: process.env.GITHUB_CLIENT_SECRET,
-            code,
-        }
-        const options = { headers: { accept: 'application/json'  } };
-        let _res = await axios.post('https://github.com/login/oauth/access_token)', body, options)
-        let access_token = _res.data.access_token;
-        console.log('print2')
-        console.log(access_token);
-    });
     const embed = new Discord.MessageEmbed()
         .setTitle("Click to Sign In")
         .setURL('https://github.com/login/oauth/authorize/?client_id=d727593907be72d259b8&scope=user%20repo');

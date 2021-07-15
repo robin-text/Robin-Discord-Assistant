@@ -519,6 +519,22 @@ const createAPIMessage = async (interaction, content) => {
 
 }
 
+app.get('/discord/oauth-callback', async ({ query: {code}  }, res) => {
+            console.log('print1');
+    const body = {
+                    client_id: process.env.GITHUB_CLIENT_ID,
+                    client_secret: process.env.GITHUB_CLIENT_SECRET,
+                    code,
+
+    }
+            const options = { headers: { accept: 'application/json'   }  };
+            let _res = await axios.post('https://github.com/login/oauth/access_token)', body, options)
+            let access_token = _res.data.access_token;
+            console.log('print2')
+            console.log(access_token);
+
+});
+
 app.listen(port, err => {
     if (err) {
         return console.log("ERROR", err);
