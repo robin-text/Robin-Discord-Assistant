@@ -6,6 +6,7 @@ const guildId = '697997529312133220'
 const sqlite = require('sqlite3').verbose();
 const express = require("express");
 const app = express();
+const port = process.env.PORT || 5000;
 
 const approvepr = require("./commands/approvePR.js");
 const getreviewers = require("./commands/reviewers.js");
@@ -517,5 +518,13 @@ const createAPIMessage = async (interaction, content) => {
     return {...data, files}
 
 }
+
+app.listen(port, err => {
+    if (err) {
+        return console.log("ERROR", err);
+    }
+    console.log(`Listening on port ${port}`);
+
+});
 
 client.login(process.env.BOTTOKEN);
