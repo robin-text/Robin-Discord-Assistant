@@ -4,6 +4,8 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const guildId = '697997529312133220'
 const sqlite = require('sqlite3').verbose();
+const express = require("express");
+const app = express();
 
 const approvepr = require("./commands/approvePR.js");
 const getreviewers = require("./commands/reviewers.js");
@@ -479,7 +481,7 @@ client.on('ready', async () => {
         console.log(args)
         // clean this
         if (command === "signin") {
-            reply = await commandlist[command](args, userRepos.get(id), userOwners.get(id), userTokens.get(id));
+            reply = await commandlist[command](app);
         } else if (command === "set") {
             reply = await commandlist[command](options, id, userOwners, userRepos, db)
         } else if (!userRepos.has(id) || !userOwners.has(id)) {

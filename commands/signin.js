@@ -1,9 +1,7 @@
 const Discord = require('discord.js');
 const axios = require("axios");
-const express = require("express");
-const app = express();
 
-module.exports = function(message, args) {
+module.exports = function(app) {
     app.get('/discord/oauth-callback', async ({ query: {code} }, res) => {
         const body = {
             client_id: process.env.GITHUB_CLIENT_ID,
