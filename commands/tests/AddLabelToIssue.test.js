@@ -1,4 +1,4 @@
-const AddLabelToIssue = require("../AddLabelToIssue");
+const AddLabelToIssue = require("../addLabelToIssue");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

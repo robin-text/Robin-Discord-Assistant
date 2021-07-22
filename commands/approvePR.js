@@ -1,25 +1,26 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-module.exports = async function(args, repo, owner) {
-    const num = args.num;
+module.exports = async function (args, repo, owner, token) {
+  const num = args.num
 
-    var message = `There was an error with reviewing this pull request`;
+  let message = 'There was an error with reviewing this pull request.'
 
-    const body = {
-        strategy : "APPROVE"
-    }
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json'
+  }
 
-    const result = await axios.post(`${API}pr/${owner}/${repo}/review/${num}`,
-        body
-    );
+  const body = {
+    strategy: 'APPROVE'
+  }
 
-    if (result.status == 200) {
-        message = `The pull request #${num} was successfully approved`;
-    }
+  const result = await axios.post(`${API}/repos/${owner}/${repo}/pulls/${num}/reviews`, body, { headers })
 
-    console.log(result)
-    const embed = new Discord.MessageEmbed().setDescription(message);
-    return embed;
+  if (result.status === 200) {
+    message = `The pull request #${num} was successfully approved`
+  }
+
+  return new Discord.MessageEmbed().setDescription(message)
 }

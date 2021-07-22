@@ -1,34 +1,30 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-module.exports = async function(args, repo, owner, token) {
-    var assignees = args.assignees.split(",")
-    const issue_num = args.num;
-    var message = `There was a problem adding ${args[0]} to ${issue_num}`;
-    const response = await axios.get(`${API}issue/${owner}/${repo}/${issue_num}`);
+module.exports = async function (args, repo, owner, token) {
+  const assignees = args.assignees.split(',')
+  const num = args.num
+  // fix error message
+  let message = `There was a problem adding ${args[0]} to ${num}`
 
-    if (response.status == 200) {
-        var existingAssignees = response.data.assignees;
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json'
+  }
 
-        for (var i = 0; i < existingAssignees.length; i++) {
-            assignees.push(existingAssignees[i].login);
-        }
+  const response = await axios.get(`${API}/repos/${owner}/${repo}/issues/${num}`, { headers })
 
-        const body = {
-            assignees : assignees,
-            token  : token
-        }
-
-        const result = await axios.patch(`${API}issue/${owner}/${repo}/${issue_num}/update`,
-            body
-        );
-
-        if (result.status == 200) {
-            message = `Successfully added ${args.assignees} to issue #${issue_num}`;
-        }
+  if (response.status === 200) {
+    const body = {
+      assignees: assignees
     }
 
-    const embed = new Discord.MessageEmbed().setDescription(message);
-    return embed;
+    const result = await axios.post(`${API}/repos/${owner}/${repo}/issues/${num}/assignees`, body, { headers })
+
+    if (result.status === 201) {
+      message = `Successfully added ${args.assignees} to issue #${num}`
+    }
+  }
+  return new Discord.MessageEmbed().setDescription(message)
 }

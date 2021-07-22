@@ -1,29 +1,29 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-module.exports = async function(args, repo, owner) {
-    const num = args.num;
+module.exports = async function (args, repo, owner, token) {
+  const num = args.num
 
-    var body = {
-        state: "closed",
-    }
+  const message = 'There was an error with closing this issue.'
 
-    const result = await axios.patch(`${API}issue/${owner}/${repo}/${num}/update`,
-        body
-    );
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json'
+  }
 
-    if (result.status == 200) {
-        message = `Issue closed: #${num} ${result.data.title}`
-    }
+  const body = {
+    state: 'closed'
+  }
 
-    if (result.status == 200) {
-        const embed = new Discord.MessageEmbed()
-            .setAuthor(result.data.user.login, result.data.user.avatar_url, result.data.user.html_url)
-            .setTitle(`Issue closed: #${result.data.number} ${result.data.title}`)
-            .setURL(result.data.html_url)
-        return embed
-    } else {
-        return new Discord.MessageEmbed().setDescription('error')
-    }
+  const result = await axios.patch(`${API}/repos/${owner}/${repo}/issues/${num}`, body, { headers })
+
+  if (result.status === 200) {
+    return new Discord.MessageEmbed()
+      .setAuthor(result.data.user.login, result.data.user.avatar_url, result.data.user.html_url)
+      .setTitle(`Issue closed: #${result.data.number} ${result.data.title}`)
+      .setURL(result.data.html_url)
+  } else {
+    return new Discord.MessageEmbed().setDescription(message)
+  }
 }

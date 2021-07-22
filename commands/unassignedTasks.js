@@ -1,46 +1,22 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-getListOfUnassignedIssues = function (response) {
-    var issues = [];
-    if (typeof response.data === "undefined") {
-        return response;
-    }
-    var responseData = response.data;
-    for (var i = 0; i < responseData.length; i++) {
-        if (!responseData[i].pull_request && responseData[i].assignees.length == 0)
-        {
-            issues.push(responseData[i].number + ' ' + responseData[i].title);
-        }
-    }
-    issues = Array.from(issues);
-
-    return issues;
-}
-
-module.exports = async function(args, repo, owner) {
-    var message = '';
-    var response = await axios.get(`${API}issue/${owner}/${repo}`);
-    console.log(response)
-
-
-    if (response.status != 200) {
-        return `There was an error getting the unassigned tasks.`;
-    }
-
-    var issues = getListOfUnassignedIssues(response);
-
-    var message = `There are a total of ${issues.length} unassigned issues:\n`
-    if (response.data.length == 0) {
-        message = 'All issues are assigned to someone!';
-    }
-    else {
-        for (var i = 0; i < response.data.length; ++i) {
-            entry = response.data[i];
-            message += `\n [Issue #${entry.number}: ${entry.title}](${entry.html_url})`
-        }
-    }
-    const embed = new Discord.MessageEmbed().setDescription(message);
-    return embed;
+module.exports = async function (args, repo, owner, token) {
+  let message = ''
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json'
+  }
+  const response = await axios.get(`${API}/search/issues?q=repo:${owner}/${repo}+type:issue+state:open&page=1`, { headers })
+  if (response.data.length === 0) {
+    message = 'There are currently no unassigned tasks in this repository.'
+  } else {
+    const issues = response.data.items
+    const unassigned = issues.filter((issue) => issue.assignee == null)
+    unassigned.forEach((issue) => {
+      message += `\n[Issue #${issue.number}: ${issue.title}](${issue.html_url}) by [${issue.user.login}](${issue.user.html_url}).`
+    })
+    return new Discord.MessageEmbed().setDescription(message)
+  }
 }

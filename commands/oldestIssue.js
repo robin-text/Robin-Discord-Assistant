@@ -1,33 +1,21 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-module.exports = async function(args, repo, owner) {
-    var response = await axios.get(`${API}issue/${owner}/${repo}/1/100`);
-
-    var totalCount = response.data.total_count;
-
-    // if (totalCount > 100) {
-    //     pageNum = Math.ceil(totalCount/100);
-    //     response = await axios.get(`${API}issue/${owner}/${repo}/1/100`);
-    // }
-
-    var responseData = response.data.items;
-    if (responseData.length == 0) {
-        return "There are no issues in this repository";
-    }
-
-    var lastIssue = responseData[responseData.length-1];
-    var title = lastIssue.title;
-    var issueCreator = lastIssue.user.login;
-    var url = lastIssue.user.html_url;
-    var createdAt = new Date(lastIssue.created_at);
-    var month = createdAt.toLocaleString('default', { month: 'long' });
-    var num = lastIssue.number
-
-    // var message = `The oldest issue was created on ${month} ${createdAt.getUTCDate()}, ${createdAt.getUTCFullYear()} by ${issueCreator} with title ${title} and number ${num}`;
-    var message = `The oldest issue is [Issue #${num}: ${title}](${lastIssue.html_url}) by ${issueCreator}](url).`
-
-    const embed = new Discord.MessageEmbed().setDescription(message);
-    return embed;
+module.exports = async function (args, repo, owner, token) {
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github.v3+json'
+  }
+  let message = ''
+  const response = await axios.get(`${API}/search/issues?q=repo:${owner}/${repo}+type:issue+state:open&sort=created&order=asc&page=1}`, { headers })
+  const total = response.data.total_count
+  const issues = response.data.items
+  const oldest = issues[0]
+  if (total === 0) {
+    message = 'There are no issues in this repository'
+  } else {
+    message = `The oldest issue is [Issue #${oldest.number}: ${oldest.title}](${oldest.html_url}) by [${oldest.user.login}](${oldest.user.html_url}).`
+  }
+  return new Discord.MessageEmbed().setDescription(message)
 }

@@ -1,4 +1,4 @@
-const AddUserToIssue = require("../AddUserToIssue");
+const AddUserToIssue = require("../addUserToIssue");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

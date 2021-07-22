@@ -1,4 +1,4 @@
-const NumIssues = require("../NumIssues");
+const NumIssues = require("../numIssues");
 const {rest} = require("msw");
 const {setupServer} = require("msw/node");
 const { default: axios } = require("axios");

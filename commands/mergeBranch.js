@@ -1,63 +1,56 @@
-const axios = require('axios');
-const API = 'https://robinrestapi.herokuapp.com/';
-const Discord = require('discord.js');
+const axios = require('axios')
+const API = 'https://api.github.com'
+const Discord = require('discord.js')
 
-// getListOfNames = function(response, info) {
-getListOfNames = function(response) {
-    var names = [];
-    if (typeof response.data === "undefined") {
-        return response;
+const get_all_branches = async (token) => {
+  let response
+  const branches = []
+  try {
+    const request_url = `${API}/repos/${owner}/${repo}/branches?per_page=100`
+    const headers = {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.v3+json'
     }
-    var responseData = response.data;
-    for (var i = 0; i < responseData.length; i++) {
-        // eval(info);
-        names.push(responseData[i].name)
-    }
-    names = new Set(names);
-    names = Array.from(names);
-    return names;
+    response = await axios.get(request_url, { headers })
+  } catch (err) {
+    console.log(err)
+    return []
+  }
+
+  response.data.forEach((branch) => {
+    branches.push(branch.name)
+  })
+
+  return branches
 }
 
-findBranch = function (response, branch) {
-    // var branchNames = getListOfNames(response, 'names.push(responseData[i].name)')
-    var branchNames = getListOfNames(response)
-    for (var i = 0; i < branchNames.length; i++) {
-        var nameLower = branchNames[i].toLowerCase();
-        if (nameLower.localeCompare(branch) == 0)  {
-            return branchNames[i];
-        }
-    }
-    console.error('no branch match found');
-    return branch;
-}
+module.exports = async function (args, repo, owner, token) {
+  const base = args.base
+  const head = args.head
+  const commit_message = args.message
 
-module.exports = async function(args, repo, owner) {
-    var base = args.base;
-    var head = args.head;
-    var commit_message = args.message;
+  let message = `There was an error with this merge. Please check if head branch ${head} and base branch ${base} exist`
 
-    var result = await axios.get(`${API}branch/${owner}/${repo}`);
-
-    base = findBranch(result, base);
-    head = findBranch(result, head);
-
-    var message = `There was an error with this merge. Please check if head branch ${head} and base branch ${base} exist`;
-
-    body = {
-        base : base,
-        head : head,
-        commit : commit_message
+  try {
+    const allBranches = await get_all_branches(token)
+    if (!allBranches.includes(base) || !allBranches.includes(head)) {
+      return message
     }
 
-    result = await axios.post(`${API}branch/${owner}/${repo}/merge`,
-        body
-    );
-
-    if (result.status == 200) {
-        message = `Merge of head ${head} into base ${base} was successful`;
+    const body = {
+      base: base,
+      head: head,
+      commit: commit_message
     }
-    console.log(result)
 
-    const embed = new Discord.MessageEmbed().setDescription(message);
-    return embed;
+    const headers = {
+      Authorization: `token ${token}`,
+      Accept: 'application/vnd.github.v3+json'
+    }
+    await axios.post(`${API}/repos/${owner}/${repo}/merges`, body, { headers })
+    message = `Merge of head ${head} into base ${base} was successful`
+  } catch (error) {
+    console.log(error)
+  }
+  return new Discord.MessageEmbed().setDescription(message)
 }
