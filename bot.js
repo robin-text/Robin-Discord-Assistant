@@ -4,11 +4,10 @@ const User = require('./models/user.js')
 const Discord = require('discord.js')
 const client = new Discord.Client()
 // const guildId = '697997529312133220'
-const guildId = ''
+const guildId = '867410281117515787'
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000
-const axios = require('axios')
 
 const approvepr = require('./commands/approvePR.js')
 const getreviewers = require('./commands/reviewers.js')
@@ -39,8 +38,7 @@ const set = require('./commands/set.js')
 
 // connect to mongodb
 const mongoose = require('mongoose')
-const dbURI = 'mongodb+srv://liubenjamin:Ake%25bKsFi5EQn%21s%2A@cluster0.etia0.mongodb.net/Cluster0?retryWrites=true&w=majority'
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DBURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const commandlist = {
   approvepr,
