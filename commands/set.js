@@ -1,6 +1,7 @@
 const axios = require('axios')
 const API = 'https://api.github.com'
 const Discord = require('discord.js')
+const User = require('../models/user.js')
 
 module.exports = async function (options, id, token) {
   const owner = options[0].value
@@ -13,6 +14,10 @@ module.exports = async function (options, id, token) {
       Accept: 'application/vnd.github.v3+json'
     }
     await axios.get(`${API}/repos/${owner}/${repo}`, { headers })
+    const filter = { discordID: id }
+    const update = { owner: owner, repo: repo }
+    const opts = { upsert: true }
+    await User.updateOne(filter, update, opts)
   } catch (error) {
     console.log(error.response)
     embed.setDescription('Either you don\'t have access to repository or repository is invalid')
