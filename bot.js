@@ -84,6 +84,33 @@ const getApp = (guildId) => {
 //   }
 // })
 
+  client.ws.on('INTERACTION_CREATE', async (interaction) => {
+    const command = interaction.data.name.toLowerCase()
+    const options = interaction.data.options
+    const id = interaction.member.user.id
+    let reply = ''
+    console.log(command)
+    console.log(options)
+    const args = {}
+    if (options) {
+      for (const o of options) {
+        args[o.name] = o.value
+      }
+    }
+    console.log('args', args)
+    const data = await User.findOne({ discordID: id }).exec()
+    if (!data || command === 'signin') {
+      reply = await commandlist.signin(id, app)
+    } else if (command === 'set') {
+      reply = await commandlist[command](options, id, data.githubToken)
+    } else if (!data.repo || !data.owner) {
+      reply = 'Before using any commands, sign in with `/signin` and set your configuration with `/set`.'
+    } else if (command in commandlist) {
+      reply = await commandlist[command](args, data.repo, data.owner, data.githubToken)
+    }
+    send(interaction, reply)
+  })
+
 client.on('ready', async () => {
   // const commands = await getApp(guildId).commands.get()
 
@@ -462,32 +489,7 @@ client.on('ready', async () => {
   })
 
   console.log('bot ready')
-  client.ws.on('INTERACTION_CREATE', async (interaction) => {
-    const command = interaction.data.name.toLowerCase()
-    const options = interaction.data.options
-    const id = interaction.member.user.id
-    let reply = ''
-    console.log(command)
-    console.log(options)
-    const args = {}
-    if (options) {
-      for (const o of options) {
-        args[o.name] = o.value
-      }
-    }
-    console.log('args', args)
-    const data = await User.findOne({ discordID: id }).exec()
-    if (!data || command === 'signin') {
-      reply = await commandlist.signin(id, app)
-    } else if (command === 'set') {
-      reply = await commandlist[command](options, id, data.githubToken)
-    } else if (!data.repo || !data.owner) {
-      reply = 'Before using any commands, sign in with `/signin` and set your configuration with `/set`.'
-    } else if (command in commandlist) {
-      reply = await commandlist[command](args, data.repo, data.owner, data.githubToken)
-    }
-    send(interaction, reply)
-  })
+
 })
 
 const send = async (interaction, response) => {
