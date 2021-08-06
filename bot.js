@@ -78,7 +78,7 @@ const getApp = (guildId) => {
 }
 
 client.on('message', (msg) => {
-    msg.channel.send('message received')
+    console.log('message received')
 })
 
   client.ws.on('INTERACTION_CREATE', async (interaction) => {
