@@ -77,12 +77,9 @@ const getApp = (guildId) => {
   return app
 }
 
-// client.on('message', (msg) => {
-//   const id = msg.author.id
-//   if (msg.content.charAt(0) === '/' && (!userRepos.get(id) || !userOwners.get(id))) {
-//     msg.channel.send('Please sign in with `/signin` and set your configuration with `/set`.')
-//   }
-// })
+client.on('message', (msg) => {
+    msg.channel.send('message received')
+})
 
   client.ws.on('INTERACTION_CREATE', async (interaction) => {
     const command = interaction.data.name.toLowerCase()
